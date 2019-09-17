@@ -1,5 +1,3 @@
-# TODO: build deps then add source files as described in the thread
-# TODO: release build instead for performance
 build-noria-server:
 	gcloud builds submit --timeout 1h --async --tag gcr.io/gothic-list-253223/noria-server:dev ./deploy/docker/noria-server
 

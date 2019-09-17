@@ -10,15 +10,6 @@ spec:
     - port: 6033
       targetPort: noria
       name: noria
-    - port: 42719
-      targetPort: worker
-      name: worker
-    - port: 39767
-      targetPort: domain
-      name: domain
-    - port: 34391
-      targetPort: read
-      name: read
   selector:
     app.kubernetes.io/name: {{ include "noria.name" . }}
     app.kubernetes.io/instance: {{ .Release.Name }}

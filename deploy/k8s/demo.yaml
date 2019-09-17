@@ -25,17 +25,15 @@ spec:
         label: luke-demo
     spec:
       containers:
-        - name: luke-demo
+        - name: server
           image: gcr.io/gothic-list-253223/noria-luke-demo:dev
           imagePullPolicy: Always
           command:
             - cargo
             - run
+            - --release
             - --bin
-            - noria-luke-demo
-          env:
-            - name: ROCKET_ENV
-              value: stage
+            - server
           ports:
             - containerPort: 8000
               name: rocket

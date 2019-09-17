@@ -18,7 +18,7 @@ spec:
         app.kubernetes.io/instance: {{ .Release.Name }}
     spec:
       initContainers:
-        # Sleep for a long time so that zookeeper comes up
+        # TODO: actually check that zk is up
         - name: sleep
           image: debian:stretch
           command:
@@ -38,26 +38,27 @@ spec:
             - --
             - --deployment
             - demo
-            # TODO: Figure this out
-            -  --zookeeper
             # TODO: use helper-tpl to turn this into a template
+            -  --zookeeper
             - noria-zookeeper-headless:2181
+            # TODO: quorum should depend on # of replicas
             - --quorum
             - "2"
+            # We need to specify the exact Pod address so that other noria servers can communicate
             - --address
-            - 0.0.0.0
+            - "$(POD_IP)"
             - --log-dir
             - /var/lib/noria
             - --verbose
           ports:
+            # TODO: check whether these are more required ports
             - containerPort: 6033
               name: noria
-            - containerPort: 42719
-              name: worker
-            - containerPort: 39767
-              name: domain
-            - containerPort: 34391
-              name: read
+          env:
+            - name: POD_IP
+              valueFrom:
+                fieldRef:
+                  fieldPath: status.podIP
           resources:
 {{- toYaml .Values.server.resources | nindent 12 }}
           volumeMounts:

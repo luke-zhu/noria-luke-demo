@@ -1,14 +1,21 @@
 use chrono::NaiveDateTime;
 use noria::{DataType, SyncControllerHandle};
+use clap::{App, Arg};
 
 // TODO: handle errors
 fn main() {
+    let matches = App::new("initdb")
+        .about("Populates the database. Run this only once")
+        .arg(Arg::with_name("zookeeper")
+            .short("z")
+            .long("zookeeper")
+            .takes_value(true)
+            .default_value("127.0.0.1:2181/demo"))
+        .get_matches();
+
+    let zookeeper_addr = matches.value_of("zookeeper").unwrap();
     let rt = tokio::runtime::Runtime::new().unwrap();
     let executor = rt.executor();
-
-    // TODO: the address should be an environment variable or a flag
-    let zookeeper_addr = "localhost:2181/test";
-    //    let zookeeper_addr = "noria-zookeeper-headless:2181/demo";
     let mut db = SyncControllerHandle::from_zk(zookeeper_addr, executor).unwrap();
 
     println!("Creating tables");

@@ -35,6 +35,9 @@ spec:
             - --release
             - --bin
             - server
+            - --
+            - --zookeeper
+            - noria-zookeeper-headless:2181
           ports:
             - containerPort: 8000
               name: rocket

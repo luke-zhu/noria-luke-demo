@@ -1,0 +1,31 @@
+
+server:
+  replicas: 3
+  image:
+    repository: gcr.io/gothic-list-253223/noria-server
+    tag: dev
+    pullPolicy: IfNotPresent
+  resources: {}
+  persistence:
+    size: 1Gi
+
+zookeeper:
+  replicaCount: 3
+  persistence:
+    size: 1Gi
+
+# TODO: make the images private then add these
+imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: ""
+
+service:
+  type: LoadBalancer
+  port: 3306
+
+# TODO: add these back in
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}

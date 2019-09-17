@@ -1,0 +1,74 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ include "noria.fullname" . }}-server
+  labels:
+{{ include "noria.labels" . | indent 4 }}
+spec:
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: {{ include "noria.name" . }}
+      app.kubernetes.io/instance: {{ .Release.Name }}
+  serviceName: "{{ include "noria.fullname" . }}-server-headless"
+  replicas: {{ .Values.server.replicas }}
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: {{ include "noria.name" . }}
+        app.kubernetes.io/instance: {{ .Release.Name }}
+    spec:
+      initContainers:
+        # Sleep for a long time so that zookeeper comes up
+        - name: sleep
+          image: debian:stretch
+          command:
+            - sleep
+            - "100"
+      containers:
+        - name: {{ .Chart.Name }}
+          image: "{{ .Values.server.image.repository }}:{{ .Values.server.image.tag }}"
+          imagePullPolicy: {{ .Values.server.image.pullPolicy }}
+          command:
+            - cargo
+            - run
+            - --manifest-path
+            - noria/Cargo.toml
+            - --bin
+            - noria-server
+            - --
+            - --deployment
+            - demo
+            # TODO: Figure this out
+            -  --zookeeper
+            # TODO: use helper-tpl to turn this into a template
+            - noria-zookeeper-headless:2181
+            - --quorum
+            - "2"
+            - --address
+            - 0.0.0.0
+            - --log-dir
+            - /var/lib/noria
+            - --verbose
+          ports:
+            - containerPort: 6033
+              name: noria
+            - containerPort: 42719
+              name: worker
+            - containerPort: 39767
+              name: domain
+            - containerPort: 34391
+              name: read
+          resources:
+{{- toYaml .Values.server.resources | nindent 12 }}
+          volumeMounts:
+            - mountPath: /var/lib/noria
+              name: logs
+  volumeClaimTemplates:
+    - metadata:
+        name: logs
+      spec:
+        accessModes:
+          - ReadWriteOnce
+        resources:
+          requests:
+            storage: {{ .Values.server.persistence.size | quote }}

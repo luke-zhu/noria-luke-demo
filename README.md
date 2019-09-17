@@ -1,4 +1,4 @@
-Sample Rust HTTP app using Noria on Kubernetes.
+Simple Rust HTTP web app using Noria on Kubernetes.
 
 `make start-noria` starts a 3 node `noria-server` cluster in the current Kubernetes context.
 
@@ -7,4 +7,3 @@ Sample Rust HTTP app using Noria on Kubernetes.
 See the instructions below for more details:
 
 `gcloud config set builds/use_kaniko True`
-

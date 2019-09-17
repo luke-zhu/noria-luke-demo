@@ -24,6 +24,7 @@ spec:
       labels:
         label: luke-demo
     spec:
+      # TODO: make it so that users don't need to run initdb manually
       containers:
         - name: server
           image: gcr.io/gothic-list-253223/noria-luke-demo:dev

@@ -1,0 +1,41 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: luke-demo
+spec:
+  type: LoadBalancer
+  ports:
+    - port: 80
+      targetPort: rocket
+      name: http
+  selector:
+    label: luke-demo
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: luke-demo
+spec:
+  selector:
+    matchLabels:
+      label: luke-demo
+  template:
+    metadata:
+      labels:
+        label: luke-demo
+    spec:
+      containers:
+        - name: luke-demo
+          image: gcr.io/gothic-list-253223/noria-luke-demo:dev
+          imagePullPolicy: Always
+          command:
+            - cargo
+            - run
+            - --bin
+            - noria-luke-demo
+          env:
+            - name: ROCKET_ENV
+              value: stage
+          ports:
+            - containerPort: 8000
+              name: rocket
